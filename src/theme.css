@@ -1,0 +1,78 @@
+/* =====================================================================
+   SUPER EARTH — TEMA VISIVO
+   Colori e font isolati come CSS custom properties (rispecchiati anche
+   nella config Tailwind). Sostituibili in un punto solo.
+   ===================================================================== */
+:root {
+  --se-hazard:      #F2C811; /* giallo-ambra hazard, dominante */
+  --se-ink:         #111311; /* nero di fondo */
+  --se-anthracite:  #1A1D1A; /* superfici / card */
+  --se-alarm:       #D8202A; /* rosso allarme, accenti */
+  --se-bone:        #EDEDE4; /* bianco sporco, testo */
+
+  --se-font-display: "Black Ops One", Impact, sans-serif;
+  --se-font-body:    "Inter", system-ui, sans-serif;
+  --se-font-mono:    "IBM Plex Mono", ui-monospace, monospace;
+}
+
+html, body { background: var(--se-ink); }
+body {
+  margin: 0;
+  color: var(--se-bone);
+  font-family: var(--se-font-body);
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--se-hazard); text-decoration: none; }
+a:hover { color: #fff; }
+::selection { background: var(--se-hazard); color: var(--se-ink); }
+
+/* Bande diagonali giallo-nere (nastro di pericolo) */
+.se-hazard-stripes {
+  background-image: repeating-linear-gradient(45deg,
+    var(--se-hazard) 0 16px, #0c0e0c 16px 32px);
+}
+.se-hazard-bar {
+  background-image: repeating-linear-gradient(-45deg,
+    var(--se-hazard) 0 13px, #0c0e0c 13px 26px);
+}
+
+/* Scanline leggere da terminale — applicare a un contenitore position:relative */
+.se-scanlines { position: relative; }
+.se-scanlines::after {
+  content: "";
+  position: absolute; inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(to bottom,
+    rgba(0,0,0,0) 0 2px, rgba(0,0,0,.16) 2px 3px);
+  mix-blend-mode: multiply;
+  z-index: 5;
+}
+
+/* Timbro "CLASSIFICATO" */
+.se-stamp {
+  font-family: var(--se-font-mono);
+  font-weight: 600;
+  color: var(--se-alarm);
+  border: 2px solid var(--se-alarm);
+  text-transform: uppercase;
+  letter-spacing: .18em;
+  padding: .18em .55em;
+  transform: rotate(-9deg);
+  opacity: .85;
+}
+
+/* Cursore lampeggiante da terminale */
+@keyframes se-blink { 0%,49%{opacity:1} 50%,100%{opacity:0} }
+.se-cursor {
+  display: inline-block;
+  width: .55ch; height: 1em;
+  background: var(--se-hazard);
+  transform: translateY(.12em);
+  animation: se-blink 1s step-end infinite;
+}
+
+/* Scrollbar coerente */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: #0c0e0c; }
+::-webkit-scrollbar-thumb { background: #333; border: 2px solid #0c0e0c; }
+::-webkit-scrollbar-thumb:hover { background: var(--se-hazard); }
