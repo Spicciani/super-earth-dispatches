@@ -4,6 +4,7 @@
    ===================================================================== */
 import React from "react";
 import { fmtDate, truncate, TYPE_LABEL } from "../lib/helpers";
+import { parseReel } from "../lib/reels";
 
 const BADGE_STYLE = {
   photo: "bg-hazard text-ink",
@@ -93,6 +94,7 @@ function StoryCard({ post, onOpen }) {
 
 /* ---- REEL ---- */
 function ReelCard({ post, onOpen }) {
+  const thumb = parseReel(post.reel_url).thumbnailUrl;
   return (
     <a
       href={post.reel_url || "#"}
@@ -106,8 +108,11 @@ function ReelCard({ post, onOpen }) {
       }}
       className="group relative flex flex-col overflow-hidden border border-alarm/40 bg-anthracite se-scanlines"
     >
-      {/* placeholder thumbnail — NESSUN embed */}
-      <div className="relative flex aspect-video items-center justify-center bg-ink se-hazard-stripes">
+      {/* anteprima: thumbnail reale del video se disponibile, altrimenti motivo hazard */}
+      <div className={`relative flex aspect-video items-center justify-center bg-ink ${thumb ? "" : "se-hazard-stripes"}`}>
+        {thumb && (
+          <img src={thumb} alt={post.title || "Reel"} className="absolute inset-0 h-full w-full object-cover" />
+        )}
         <div className="absolute inset-0 bg-ink/70" />
         <span className="relative z-10 flex h-16 w-16 items-center justify-center rounded-full border-2 border-hazard bg-ink/80 text-hazard transition group-hover:scale-110 group-hover:bg-alarm group-hover:text-bone group-hover:border-alarm">
           <PlayIcon />

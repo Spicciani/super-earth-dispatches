@@ -11,6 +11,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { supabase, PHOTO_BUCKET } from "./lib/supabase";
 import { fmtDate, TYPE_LABEL } from "./lib/helpers";
 import { compressImage } from "./lib/image";
+import { parseReel } from "./lib/reels";
 import Layout from "./components/Layout";
 import PostGrid from "./components/PostGrid";
 import PostForm from "./components/PostForm";
@@ -103,6 +104,63 @@ function GalleryScreen({ posts, onOpen, loading }) {
   );
 }
 
+/* Player reel: embed inline per YouTube/Vimeo, link-out per il resto. */
+function ReelPlayer({ url, title }) {
+  const reel = parseReel(url);
+
+  if (reel.platform === "youtube" || reel.platform === "vimeo") {
+    return (
+      <div className="border border-hazard/20">
+        <div className="relative aspect-video bg-ink">
+          <iframe
+            src={reel.embedUrl}
+            title={title || "Reel"}
+            className="absolute inset-0 h-full w-full"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowFullScreen
+          />
+        </div>
+        <div className="flex items-center justify-between gap-3 border-t border-hazard/20 bg-ink/60 px-4 py-2">
+          <span className="font-mono text-[10px] tracking-[0.2em] text-bone/45">
+            &gt; TRASMISSIONE INCORPORATA — {reel.platform.toUpperCase()}
+          </span>
+          <a
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="shrink-0 font-mono text-[10px] tracking-[0.15em] text-hazard hover:text-bone"
+          >
+            APRI ORIGINALE ↗
+          </a>
+        </div>
+      </div>
+    );
+  }
+
+  // Fallback: piattaforma non incorporabile (es. TikTok/Instagram) -> link-out
+  return (
+    <div className="border border-alarm/40 se-hazard-stripes">
+      <div className="bg-ink/85 p-6 text-center">
+        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full border-2 border-hazard text-hazard">
+          <svg viewBox="0 0 24 24" className="h-7 w-7" fill="currentColor">
+            <path d="M8 5v14l11-7z" />
+          </svg>
+        </div>
+        <p className="mb-4 font-mono text-xs text-bone/60">&gt; QUESTA PIATTAFORMA NON PERMETTE L'ANTEPRIMA INCORPORATA</p>
+        <a
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-block break-all border-2 border-hazard bg-hazard px-5 py-3 font-mono text-sm font-bold tracking-[0.15em] text-ink transition hover:bg-alarm hover:border-alarm hover:text-bone"
+        >
+          ▶ APRI REEL ESTERNO
+        </a>
+        <p className="mt-3 break-all font-mono text-[11px] text-alarm">{url}</p>
+      </div>
+    </div>
+  );
+}
+
 function DetailScreen({ post, onBack }) {
   if (!post) return null;
   return (
@@ -143,27 +201,7 @@ function DetailScreen({ post, onBack }) {
             </div>
           )}
 
-          {post.type === "reel" && (
-            <div className="border border-alarm/40 se-hazard-stripes">
-              <div className="bg-ink/85 p-6 text-center">
-                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full border-2 border-hazard text-hazard">
-                  <svg viewBox="0 0 24 24" className="h-7 w-7" fill="currentColor">
-                    <path d="M8 5v14l11-7z" />
-                  </svg>
-                </div>
-                <p className="mb-4 font-mono text-xs text-bone/60">&gt; CONTENUTO ESTERNO — NON INCORPORATO</p>
-                <a
-                  href={post.reel_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-block break-all border-2 border-hazard bg-hazard px-5 py-3 font-mono text-sm font-bold tracking-[0.15em] text-ink transition hover:bg-alarm hover:border-alarm hover:text-bone"
-                >
-                  ▶ APRI REEL ESTERNO
-                </a>
-                <p className="mt-3 break-all font-mono text-[11px] text-alarm">{post.reel_url}</p>
-              </div>
-            </div>
-          )}
+          {post.type === "reel" && <ReelPlayer url={post.reel_url} title={post.title} />}
         </div>
       </article>
     </div>
