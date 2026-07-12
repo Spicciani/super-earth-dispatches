@@ -16,6 +16,7 @@ import Layout from "./components/Layout";
 import PostGrid from "./components/PostGrid";
 import PostForm from "./components/PostForm";
 import LoginForm from "./components/LoginForm";
+import Comments from "./components/Comments";
 
 /* Converte una riga del DB nella forma attesa dai componenti:
    il DB salva image_path, ma la UI vuole image_url (URL pubblico). */
@@ -161,7 +162,7 @@ function ReelPlayer({ url, title }) {
   );
 }
 
-function DetailScreen({ post, onBack }) {
+function DetailScreen({ post, onBack, session }) {
   if (!post) return null;
   return (
     <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6">
@@ -204,6 +205,8 @@ function DetailScreen({ post, onBack }) {
           {post.type === "reel" && <ReelPlayer url={post.reel_url} title={post.title} />}
         </div>
       </article>
+
+      <Comments postId={post.id} session={session} />
     </div>
   );
 }
@@ -337,7 +340,7 @@ export default function App() {
   }
 
   let content;
-  if (screen === "detail") content = <DetailScreen post={selected} onBack={() => go("dispacci", "dispacci")} />;
+  if (screen === "detail") content = <DetailScreen post={selected} onBack={() => go("dispacci", "dispacci")} session={session} />;
   else if (screen === "materiale") content = <GalleryScreen posts={posts} onOpen={openPost} loading={loading} />;
   else if (screen === "login") content = <CenterScreen><LoginForm onSubmit={handleLogin} error={authError} busy={authBusy} /></CenterScreen>;
   else if (screen === "form") content = <CenterScreen><PostForm onSubmit={handleCreate} busy={submitting} /></CenterScreen>;
